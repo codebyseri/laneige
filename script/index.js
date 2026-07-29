@@ -36,6 +36,15 @@ document.addEventListener("DOMContentLoaded", () => {
         mobileMenuButton?.setAttribute("aria-label", "전체 메뉴 열기");
         body.classList.remove("is-mobile-menu-open");
 
+        mobileMenu?.querySelectorAll(".mobile-menu__group-title").forEach((button) => {
+            button.setAttribute("aria-expanded", "false");
+            const list = button.nextElementSibling;
+
+            if (list) {
+                list.hidden = true;
+            }
+        });
+
         if (restoreFocus) {
             mobileMenuButton?.focus();
         }
@@ -56,6 +65,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     mobileMenu?.querySelectorAll("a").forEach((link) => {
         link.addEventListener("click", () => closeMobileMenu({ restoreFocus: false }));
+    });
+
+    mobileMenu?.querySelectorAll(".mobile-menu__group-title").forEach((button) => {
+        button.addEventListener("click", () => {
+            const isExpanded = button.getAttribute("aria-expanded") === "true";
+            const list = button.nextElementSibling;
+
+            mobileMenu.querySelectorAll(".mobile-menu__group-title").forEach((otherButton) => {
+                if (otherButton === button) {
+                    return;
+                }
+
+                otherButton.setAttribute("aria-expanded", "false");
+                const otherList = otherButton.nextElementSibling;
+
+                if (otherList) {
+                    otherList.hidden = true;
+                }
+            });
+
+            button.setAttribute("aria-expanded", String(!isExpanded));
+
+            if (list) {
+                list.hidden = isExpanded;
+            }
+        });
     });
 
     document.addEventListener("keydown", (event) => {

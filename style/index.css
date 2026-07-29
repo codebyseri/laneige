@@ -2966,7 +2966,10 @@ input:focus-visible {
     .mobile-menu-backdrop {
         position: fixed;
         z-index: 1001;
-        inset: var(--header-height) 0 0;
+        top: var(--header-height);
+        right: 0;
+        bottom: 0;
+        left: 0;
         display: block;
         visibility: hidden;
         background: rgba(0, 0, 0, 0.42);
@@ -2989,6 +2992,7 @@ input:focus-visible {
         display: flex;
         flex-direction: column;
         width: min(420px, 88vw);
+        height: calc(100vh - var(--header-height));
         height: calc(100dvh - var(--header-height));
         visibility: hidden;
         background: var(--color-white);
@@ -3034,38 +3038,42 @@ input:focus-visible {
         padding: 8px 28px 28px;
         overflow-y: auto;
         overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
     }
 
     .mobile-menu__group {
         border-bottom: 1px solid var(--color-border);
     }
 
-    .mobile-menu__group summary {
+    .mobile-menu__group-title {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        width: 100%;
         min-height: 60px;
+        padding: 0;
+        color: inherit;
+        background: transparent;
+        border: 0;
         font-size: 16px;
         font-weight: 600;
         letter-spacing: 0.08em;
         cursor: pointer;
-        list-style: none;
+        text-align: left;
+        -webkit-appearance: none;
+        appearance: none;
     }
 
-    .mobile-menu__group summary::-webkit-details-marker {
-        display: none;
-    }
-
-    .mobile-menu__group summary i {
+    .mobile-menu__group-title i {
         font-size: 11px;
         transition: transform var(--transition-fast);
     }
 
-    .mobile-menu__group[open] summary {
+    .mobile-menu__group-title[aria-expanded="true"] {
         color: var(--color-blue);
     }
 
-    .mobile-menu__group[open] summary i {
+    .mobile-menu__group-title[aria-expanded="true"] i {
         transform: rotate(180deg);
     }
 
@@ -3074,6 +3082,10 @@ input:focus-visible {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0 22px;
         padding: 2px 0 22px;
+    }
+
+    .mobile-menu__group ul[hidden] {
+        display: none;
     }
 
     .mobile-menu__group a {
@@ -3146,7 +3158,7 @@ input:focus-visible {
         padding: 6px 20px 24px;
     }
 
-    .mobile-menu__group summary,
+    .mobile-menu__group-title,
     .mobile-menu__single-link {
         min-height: 56px;
         font-size: 15px;
