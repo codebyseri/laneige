@@ -17,6 +17,22 @@ document.addEventListener("DOMContentLoaded", () => {
         "#wbProductCount"
     );
 
+    const visibleCountElement = document.querySelector(
+        "#wbVisibleCount"
+    );
+
+    const totalCountElement = document.querySelector(
+        "#wbTotalCount"
+    );
+
+    const loadMoreArea = document.querySelector(
+        "#wbLoadMoreArea"
+    );
+
+    const loadMoreButton = document.querySelector(
+        "#wbLoadMoreButton"
+    );
+
     const sortSelect = document.querySelector(
         "#wbSortSelect"
     );
@@ -32,55 +48,159 @@ document.addEventListener("DOMContentLoaded", () => {
     const emptyResetButton =
         emptyState?.querySelector("button");
 
+    const filterPanel =
+        document.querySelector(".wb-filter");
+
+    const mobileFilterButton =
+        document.querySelector(
+            "#wbMobileFilterButton"
+        );
+
+    const filterBackdrop =
+        document.querySelector(
+            "#wbFilterBackdrop"
+        );
+
+    const filterGroupButton =
+        document.querySelector(
+            ".wb-filter__group-title"
+        );
+
+    const filterOptions =
+        document.querySelector(
+            ".wb-filter__options"
+        );
+
+    const initialVisibleCount = 9;
+    const loadMoreCount = 5;
+
     let activeCategory = "all";
+    let visibleLimit = initialVisibleCount;
 
     /* ======================================
-       제품 표시
+       현재 필터에 해당하는 상품 가져오기
     ====================================== */
 
-    const updateProducts = () => {
-        let visibleCount = 0;
-
-        productCards.forEach((card) => {
+    const getFilteredCards = () => {
+        return productCards.filter((card) => {
             const cardCategory =
                 card.dataset.category;
 
-            const isVisible =
+            return (
                 activeCategory === "all" ||
-                cardCategory === activeCategory;
+                cardCategory === activeCategory
+            );
+        });
+    };
 
-            card.hidden = !isVisible;
+    /* ======================================
+       상품 표시 업데이트
+    ====================================== */
 
-            if (isVisible) {
-                visibleCount += 1;
+    const updateProducts = ({
+        animateNewItems = false
+    } = {}) => {
+        const filteredCards = getFilteredCards();
+        const totalFilteredCount =
+            filteredCards.length;
+
+        const actualVisibleCount = Math.min(
+            visibleLimit,
+            totalFilteredCount
+        );
+
+        productCards.forEach((card) => {
+            card.hidden = true;
+            card.classList.remove(
+                "is-load-hidden",
+                "is-load-visible"
+            );
+        });
+
+        filteredCards.forEach((card, index) => {
+            const shouldShow =
+                index < visibleLimit;
+
+            card.hidden = false;
+            card.classList.toggle(
+                "is-load-hidden",
+                !shouldShow
+            );
+
+            if (
+                animateNewItems &&
+                shouldShow &&
+                index >= visibleLimit - loadMoreCount
+            ) {
+                card.classList.add(
+                    "is-load-visible"
+                );
             }
         });
 
         if (productCount) {
             productCount.textContent =
-                String(visibleCount);
+                String(totalFilteredCount);
+        }
+
+        if (visibleCountElement) {
+            visibleCountElement.textContent =
+                String(actualVisibleCount);
+        }
+
+        if (totalCountElement) {
+            totalCountElement.textContent =
+                String(totalFilteredCount);
+        }
+
+        const hasProducts =
+            totalFilteredCount > 0;
+
+        if (productGrid) {
+            productGrid.hidden = !hasProducts;
         }
 
         if (emptyState) {
-            emptyState.hidden =
-                visibleCount !== 0;
+            emptyState.hidden = hasProducts;
         }
 
-        if (productGrid) {
-            productGrid.hidden =
-                visibleCount === 0;
+        if (loadMoreArea) {
+            const hasMoreProducts =
+                actualVisibleCount <
+                totalFilteredCount;
+
+            loadMoreArea.hidden =
+                !hasMoreProducts;
         }
     };
 
     /* ======================================
-       카테고리 선택
+       Load More
+    ====================================== */
+
+    loadMoreButton?.addEventListener(
+        "click",
+        () => {
+            visibleLimit += loadMoreCount;
+
+            updateProducts({
+                animateNewItems: true
+            });
+        }
+    );
+
+    /* ======================================
+       카테고리 필터
     ====================================== */
 
     categoryInputs.forEach((input) => {
         input.addEventListener("change", () => {
             activeCategory = input.value;
-            updateProducts();
 
+            /* 필터를 바꾸면 다시 최대 8개부터 표시 */
+            visibleLimit = initialVisibleCount;
+
+            updateProducts();
             closeMobileFilter();
         });
     });
@@ -91,10 +211,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const resetFilter = () => {
         activeCategory = "all";
+        visibleLimit = initialVisibleCount;
 
-        const allInput = document.querySelector(
-            'input[name="wbCategory"][value="all"]'
-        );
+        const allInput =
+            document.querySelector(
+                'input[name="wbCategory"][value="all"]'
+            );
 
         if (allInput) {
             allInput.checked = true;
@@ -114,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     /* ======================================
-       제품 정렬
+       상품 정렬
     ====================================== */
 
     const sortProducts = (sortType) => {
@@ -122,48 +244,56 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const sortedCards = [...productCards];
+        productCards.sort(
+            (firstCard, secondCard) => {
+                if (sortType === "name") {
+                    const firstName =
+                        firstCard.dataset.name ?? "";
 
-        sortedCards.sort((firstCard, secondCard) => {
-            if (sortType === "name") {
-                const firstName =
-                    firstCard.dataset.name ?? "";
+                    const secondName =
+                        secondCard.dataset.name ?? "";
 
-                const secondName =
-                    secondCard.dataset.name ?? "";
+                    return firstName.localeCompare(
+                        secondName,
+                        "ko"
+                    );
+                }
 
-                return firstName.localeCompare(
-                    secondName,
-                    "ko"
+                if (sortType === "best") {
+                    const firstBest = Number(
+                        firstCard.dataset.best ?? 0
+                    );
+
+                    const secondBest = Number(
+                        secondCard.dataset.best ?? 0
+                    );
+
+                    return (
+                        secondBest - firstBest
+                    );
+                }
+
+                const firstNew = Number(
+                    firstCard.dataset.new ?? 0
                 );
+
+                const secondNew = Number(
+                    secondCard.dataset.new ?? 0
+                );
+
+                return secondNew - firstNew;
             }
+        );
 
-            if (sortType === "best") {
-                const firstBest = Number(
-                    firstCard.dataset.best ?? 0
-                );
-
-                const secondBest = Number(
-                    secondCard.dataset.best ?? 0
-                );
-
-                return secondBest - firstBest;
-            }
-
-            const firstNew = Number(
-                firstCard.dataset.new ?? 0
-            );
-
-            const secondNew = Number(
-                secondCard.dataset.new ?? 0
-            );
-
-            return secondNew - firstNew;
-        });
-
-        sortedCards.forEach((card) => {
+        productCards.forEach((card) => {
             productGrid.appendChild(card);
         });
+
+        /*
+         정렬을 변경해도 사용자가 열어놓은
+         상품 개수는 유지
+        */
+        updateProducts();
     };
 
     sortSelect?.addEventListener(
@@ -174,18 +304,8 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     /* ======================================
-       필터 접기
+       필터 메뉴 접기
     ====================================== */
-
-    const filterGroupButton =
-        document.querySelector(
-            ".wb-filter__group-title"
-        );
-
-    const filterOptions =
-        document.querySelector(
-            ".wb-filter__options"
-        );
 
     filterGroupButton?.addEventListener(
         "click",
@@ -223,38 +343,28 @@ document.addEventListener("DOMContentLoaded", () => {
        모바일 필터
     ====================================== */
 
-    const filterPanel =
-        document.querySelector(".wb-filter");
-
-    const mobileFilterButton =
-        document.querySelector(
-            "#wbMobileFilterButton"
-        );
-
-    const filterBackdrop =
-        document.querySelector(
-            "#wbFilterBackdrop"
-        );
-
-    const openMobileFilter = () => {
+    function openMobileFilter() {
         if (!filterPanel || !filterBackdrop) {
             return;
         }
 
         filterPanel.classList.add("is-open");
         filterBackdrop.hidden = false;
-        document.body.style.overflow = "hidden";
-    };
 
-    const closeMobileFilter = () => {
+        document.body.style.overflow =
+            "hidden";
+    }
+
+    function closeMobileFilter() {
         if (!filterPanel || !filterBackdrop) {
             return;
         }
 
         filterPanel.classList.remove("is-open");
         filterBackdrop.hidden = true;
+
         document.body.style.overflow = "";
-    };
+    }
 
     mobileFilterButton?.addEventListener(
         "click",
@@ -281,19 +391,21 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     /* ======================================
-       앵커 스크롤
+       제품 영역 부드러운 이동
     ====================================== */
 
-    const productAnchor = document.querySelector(
-        'a[href="#wbProductSection"]'
-    );
+    const productAnchor =
+        document.querySelector(
+            'a[href="#wbProductSection"]'
+        );
 
     productAnchor?.addEventListener(
         "click",
         (event) => {
-            const target = document.querySelector(
-                "#wbProductSection"
-            );
+            const target =
+                document.querySelector(
+                    "#wbProductSection"
+                );
 
             if (!target) {
                 return;
@@ -330,17 +442,22 @@ document.addEventListener("DOMContentLoaded", () => {
             ".wb-reveal"
         );
 
+    const reducedMotion =
+        window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
+
     if (
         "IntersectionObserver" in window &&
-        !window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-        ).matches
+        !reducedMotion
     ) {
         const revealObserver =
             new IntersectionObserver(
                 (entries, observer) => {
                     entries.forEach((entry) => {
-                        if (!entry.isIntersecting) {
+                        if (
+                            !entry.isIntersecting
+                        ) {
                             return;
                         }
 
@@ -354,9 +471,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
                 },
                 {
-                    threshold: 0.12,
+                    threshold: 0.1,
                     rootMargin:
-                        "0px 0px -50px 0px"
+                        "0px 0px -40px 0px"
                 }
             );
 
@@ -365,7 +482,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     } else {
         revealElements.forEach((element) => {
-            element.classList.add("is-visible");
+            element.classList.add(
+                "is-visible"
+            );
         });
     }
 
@@ -374,5 +493,4 @@ document.addEventListener("DOMContentLoaded", () => {
     ====================================== */
 
     sortProducts("new");
-    updateProducts();
 });
