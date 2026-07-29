@@ -872,17 +872,25 @@
     .wb-mobile-filter-button {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        flex-shrink: 0;
         height: 42px;
-        padding: 0 12px;
+        width: 42px;
+        padding: 0;
         background: transparent;
         border: 0;
         cursor: pointer;
-        font-size: 12px;
+        font-size: 16px;
     }
 
     .wb-product-toolbar {
+        justify-content: flex-start;
+        gap: 8px;
         margin-bottom: 24px;
+    }
+
+    .wb-product-toolbar__right {
+        margin-left: auto;
     }
 
     .wb-product-grid {
@@ -961,7 +969,7 @@
     }
 
     .wb-mobile-filter-button {
-        padding: 0 8px;
+        width: 36px;
     }
 
     .wb-sort {

@@ -4,6 +4,73 @@ document.addEventListener("DOMContentLoaded", () => {
     const body = document.body;
 
     /* ========================================
+       Tablet / mobile menu
+    ========================================= */
+
+    const mobileMenuButton = document.getElementById("mobileMenuButton");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const mobileMenuCloseButton = document.getElementById("mobileMenuCloseButton");
+    const mobileMenuBackdrop = document.getElementById("mobileMenuBackdrop");
+
+    function openMobileMenu() {
+        if (!mobileMenu) {
+            return;
+        }
+
+        mobileMenu.classList.add("is-open");
+        mobileMenu.setAttribute("aria-hidden", "false");
+        mobileMenuBackdrop?.classList.add("is-open");
+        mobileMenuBackdrop?.setAttribute("aria-hidden", "false");
+        mobileMenuButton?.setAttribute("aria-expanded", "true");
+        mobileMenuButton?.setAttribute("aria-label", "전체 메뉴 닫기");
+        body.classList.add("is-mobile-menu-open");
+        mobileMenuCloseButton?.focus();
+    }
+
+    function closeMobileMenu({ restoreFocus = true } = {}) {
+        mobileMenu?.classList.remove("is-open");
+        mobileMenu?.setAttribute("aria-hidden", "true");
+        mobileMenuBackdrop?.classList.remove("is-open");
+        mobileMenuBackdrop?.setAttribute("aria-hidden", "true");
+        mobileMenuButton?.setAttribute("aria-expanded", "false");
+        mobileMenuButton?.setAttribute("aria-label", "전체 메뉴 열기");
+        body.classList.remove("is-mobile-menu-open");
+
+        if (restoreFocus) {
+            mobileMenuButton?.focus();
+        }
+    }
+
+    mobileMenuButton?.addEventListener("click", () => {
+        const isOpen = mobileMenu?.classList.contains("is-open") ?? false;
+
+        if (isOpen) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    });
+
+    mobileMenuCloseButton?.addEventListener("click", () => closeMobileMenu());
+    mobileMenuBackdrop?.addEventListener("click", () => closeMobileMenu());
+
+    mobileMenu?.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => closeMobileMenu({ restoreFocus: false }));
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && mobileMenu?.classList.contains("is-open")) {
+            closeMobileMenu();
+        }
+    });
+
+    window.addEventListener("resize", () => {
+        if (window.innerWidth >= 1200 && mobileMenu?.classList.contains("is-open")) {
+            closeMobileMenu({ restoreFocus: false });
+        }
+    });
+
+    /* ========================================
        Header submenu
     ========================================= */
 
@@ -248,6 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         lastFocusedElement = document.activeElement;
 
+        closeMobileMenu({ restoreFocus: false });
         closeAllSubmenus();
         closeMyMenu();
 

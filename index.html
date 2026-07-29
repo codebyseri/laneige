@@ -244,6 +244,12 @@
                 </ul>
             </nav>
 
+            <!-- 태블릿 · 모바일 전체 메뉴 버튼 -->
+            <button type="button" class="mobile-menu-button" id="mobileMenuButton"
+                aria-label="전체 메뉴 열기" aria-controls="mobileMenu" aria-expanded="false">
+                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+            </button>
+
             <!-- 중앙 로고 -->
             <a href="./index.html" class="brand-logo" aria-label="라네즈 홈">
                 <img src="./images/laneige-logo.jpg" alt="LANEIGE" />
@@ -479,6 +485,74 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 태블릿 · 모바일 메뉴 -->
+            <div class="mobile-menu-backdrop" id="mobileMenuBackdrop" aria-hidden="true"></div>
+
+            <nav class="mobile-menu" id="mobileMenu" aria-label="모바일 전체 메뉴" aria-hidden="true">
+                <div class="mobile-menu__header">
+                    <strong>MENU</strong>
+
+                    <button type="button" class="mobile-menu__close" id="mobileMenuCloseButton" aria-label="전체 메뉴 닫기">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <div class="mobile-menu__body">
+                    <details class="mobile-menu__group">
+                        <summary>SHOP <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+                        <ul>
+                            <li><a href="#">전체 제품</a></li>
+                            <li><a href="#">신제품</a></li>
+                            <li><a href="#">베스트셀러</a></li>
+                            <li><a href="#">스킨케어</a></li>
+                            <li><a href="#">립케어</a></li>
+                            <li><a href="#">세트 · 미니</a></li>
+                        </ul>
+                    </details>
+
+                    <details class="mobile-menu__group">
+                        <summary>LINE <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+                        <ul>
+                            <li><a href="#">전체 라인</a></li>
+                            <li><a href="./page/water-bank.html">워터뱅크 블루 히알루로닉</a></li>
+                            <li><a href="#">크림 스킨</a></li>
+                            <li><a href="#">바운시 앤 펌</a></li>
+                            <li><a href="#">래디언-C</a></li>
+                            <li><a href="#">슬리핑 케어</a></li>
+                        </ul>
+                    </details>
+
+                    <details class="mobile-menu__group">
+                        <summary>SKIN <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+                        <ul>
+                            <li><a href="#">수분 · 보습</a></li>
+                            <li><a href="#">진정 · 민감</a></li>
+                            <li><a href="#">브라이트닝</a></li>
+                            <li><a href="#">탄력 · 주름</a></li>
+                            <li><a href="#">피부 고민별 추천</a></li>
+                        </ul>
+                    </details>
+
+                    <details class="mobile-menu__group">
+                        <summary>BESPOKE <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+                        <ul>
+                            <li><a href="#">비스포크 서비스 소개</a></li>
+                            <li><a href="#">서비스 예약</a></li>
+                            <li><a href="#">예약 조회</a></li>
+                            <li><a href="#">라네즈 쇼룸 안내</a></li>
+                        </ul>
+                    </details>
+
+                    <a href="#" class="mobile-menu__single-link">EVENT <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                    <a href="#" class="mobile-menu__single-link">BRAND <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                </div>
+
+                <div class="mobile-menu__footer">
+                    <a href="#"><i class="fa-regular fa-user" aria-hidden="true"></i> 로그인</a>
+                    <a href="#"><i class="fa-regular fa-heart" aria-hidden="true"></i> 관심상품</a>
+                </div>
+            </nav>
         </div>
     </header>
 
@@ -622,7 +696,7 @@
                             </p>
 
 
-                            <a href="#" class="main-visual__link">
+                            <a href="./page/water-bank.html" class="main-visual__link">
                                 자세히 보기
 
                                 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
@@ -829,7 +903,7 @@
                     </article>
 
                     <article class="product-card reveal-item" data-product-category="best">
-                        <a href="#" class="product-card__link">
+                        <a href="./page/water-bank.html" class="product-card__link">
                             <div class="product-card__image">
                                 <img src="images/product-water-bank-cream.jpg" alt="워터뱅크 블루 히알루로닉 크림">
 
